@@ -1,12 +1,210 @@
-<!DOCTYPE html>
+<script type="text/javascript">
+        var gk_isXlsx = false;
+        var gk_xlsxFileLookup = {};
+        var gk_fileData = {};
+        function filledCell(cell) {
+          return cell !== '' && cell != null;
+        }
+        function loadFileData(filename) {
+        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
+            try {
+                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
+                var firstSheetName = workbook.SheetNames[0];
+                var worksheet = workbook.Sheets[firstSheetName];
+
+                // Convert sheet to JSON to filter blank rows
+                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
+                // Filter out blank rows (rows where all cells are empty, null, or undefined)
+                var filteredData = jsonData.filter(row => row.some(filledCell));
+
+                // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
+                var headerRowIndex = filteredData.findIndex((row, index) =>
+                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
+                );
+                // Fallback
+                if (headerRowIndex === -1 || headerRowIndex > 25) {
+                  headerRowIndex = 0;
+                }
+
+                // Convert filtered JSON back to CSV
+                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
+                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
+                return csv;
+            } catch (e) {
+                console.error(e);
+                return "";
+            }
+        }
+        return gk_fileData[filename] || "";
+        }
+        </script><!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Pradumn Singh Chauhan</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pradumn Singh - Professional Portfolio</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6;
+        }
+        .hero-bg {
+            background: linear-gradient(to right, #1e3a8a, #3b82f6);
+        }
+        .section-card {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .skill-badge {
+            transition: transform 0.3s ease;
+        }
+        .skill-badge:hover {
+            transform: scale(1.1);
+        }
+    </style>
 </head>
 <body>
-  <h1>Hello, I’m Pradumn Singh Chauhan</h1>
-  <p>Welcome to my portfolio website hosted on GitHub Pages!</p>
+    <!-- Header Section -->
+    <header class="hero-bg text-white py-16">
+        <div class="container mx-auto px-4 text-center" data-aos="fade-down">
+            <h1 class="text-4xl md:text-5xl font-bold">Pradumn Singh</h1>
+            <p class="text-xl mt-2">TechOps Engineer | Cloud & Automation Specialist</p>
+            <div class="mt-4 flex justify-center space-x-4">
+                <a href="mailto:spradumn1@gmail.com" class="hover:underline">spradumn1@gmail.com</a>
+                <span>|</span>
+                <span>+91 6306514393</span>
+                <span>|</span>
+                <span>Noida, India</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- About Section -->
+    <section class="py-12">
+        <div class="container mx-auto px-4">
+            <h2 class="text-3xl font-bold text-center mb-8" data-aos="fade-up">About Me</h2>
+            <div class="section-card p-6" data-aos="fade-up" data-aos-delay="100">
+                <p class="text-gray-700">
+                    A dynamic, result-driven professional with four years of experience in the Core IT Sector, specializing in managing and operating cloud and on-premises infrastructure. I am passionate about contributing to a dynamic IT environment by leveraging my expertise in cloud operations, system monitoring, and automation. I continuously enhance my efficiency and problem-solving capabilities using AI tools and emerging technologies.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Experience Section -->
+    <section class="py-12 bg-gray-100">
+        <div class="container mx-auto px-4">
+            <h2 class="text-3xl font-bold text-center mb-8" data-aos="fade-up">Professional Experience</h2>
+            <div class="space-y-6">
+                <!-- Thales Group -->
+                <div class="section-card p-6" data-aos="fade-up" data-aos-delay="100">
+                    <h3 class="text-2xl font-semibold">TechOps Engineer III - Thales Group</h3>
+                    <p class="text-gray-600">Nov 2022 - Present</p>
+                    <p class="text-gray-700 mt-2">Products: AOTA, COTA, TDI/KYC, PCB, MMKT, TKM</p>
+                    <ul class="list-disc ml-6 mt-2 text-gray-700">
+                        <li>Manage infrastructure and application alerts in Linux, Docker, and Kubernetes environments.</li>
+                        <li>Automate operational processes using shell scripting.</li>
+                        <li>Support CI/CD pipelines for application deployment.</li>
+                        <li>Implement and maintain cloud infrastructure (AWS, GCP) for scalability and security.</li>
+                        <li>Monitor and optimize system performance, troubleshoot issues, and perform RCA analysis.</li>
+                        <li>Develop automated PagerDuty alert systems and Datadog dashboards.</li>
+                    </ul>
+                </div>
+                <!-- HCL Technologies -->
+                <div class="section-card p-6" data-aos="fade-up" data-aos-delay="200">
+                    <h3 class="text-2xl font-semibold">Software Engineer - HCL Technologies</h3>
+                    <p class="text-gray-600">Jul 2021 - Nov 2022</p>
+                    <p class="text-gray-700 mt-2">Project: NBCU - GLOBAL - KTLO</p>
+                    <ul class="list-disc ml-6 mt-2 text-gray-700">
+                        <li>Proficient in Linux system administration and backup scheduling for databases.</li>
+                        <li>Set up infrastructure monitoring using CloudWatch and Datadog.</li>
+                        <li>Designed Datadog dashboards and managed file system mount points using LVM.</li>
+                    </ul>
+                    <p class="text-gray-700 mt-2">Project: Internal Client KLA</p>
+                    <ul class="list-disc ml-6 mt-2 text-gray-700">
+                        <li>Managed SAP-based job scheduling and troubleshooting.</li>
+                        <li>Automated SAP report generation and monitoring using Python.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Skills Section -->
+    <section class="py-12">
+        <div class="container mx-auto px-4">
+            <h2 class="text-3xl font-bold text-center mb-8" data-aos="fade-up">Skills & Tools</h2>
+            <div class="flex flex-wrap justify-center gap-4" data-aos="fade-up" data-aos-delay="100">
+                <span class="skill-badge bg-blue-500 text-white px-4 py-2 rounded-full">Linux</span>
+                <span class="skill-badge bg-blue-500 text-white px-4 py-2 rounded-full">Shell Scripting</span>
+                <span class="skill-badge bg-blue-500 text-white px-4 py-2 rounded-full">AWS</span>
+                <span class="skill-badge bg-blue-500 text-white px-4 py-2 rounded-full">Docker</span>
+                <span class="skill-badge bg-blue-500 text-white px-4 py-2 rounded-full">Kubernetes</span>
+                <span class="skill-badge bg-blue-500 text-white px-4 py-2 rounded-full">Datadog</span>
+                <span class="skill-badge bg-blue-500 text-white px-4 py-2 rounded-full">Grafana</span>
+                <span class="skill-badge bg-blue-500 text-white px-4 py-2 rounded-full">SAP</span>
+                <span class="skill-badge bg-blue-500 text-white px-4 py-2 rounded-full">Python</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- Education Section -->
+    <section class="py-12 bg-gray-100">
+        <div class="container mx-auto px-4">
+            <h2 class="text-3xl font-bold text-center mb-8" data-aos="fade-up">Education</h2>
+            <div class="section-card p-6" data-aos="fade-up" data-aos-delay="100">
+                <h3 class="text-2xl font-semibold">BTech in Electronics & Communication</h3>
+                <p class="text-gray-600">MPEC, 2020 | CGPA: 8.31</p>
+                <p class="text-gray-700 mt-2">Intermediate: Durgaprasad Vidyaniketan, 2015 | 73.00%</p>
+                <p class="text-gray-700">High School: Durgaprasad Vidyaniketan, 2013 | 62.00%</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Certifications Section -->
+    <section class="py-12">
+        <div class="container mx-auto px-4">
+            <h2 class="text-3xl font-bold text-center mb-8" data-aos="fade-up">Certifications</h2>
+            <div class="section-card p-6" data-aos="fade-up" data-aos-delay="100">
+                <ul class="list-disc ml-6 text-gray-700">
+                    <li>Certified Kubernetes Administrator (CKA)</li>
+                    <li>Red Hat Certified System Administrator</li>
+                    <li>AWS Solution Architect and SysOps</li>
+                    <li>AWS Cloud Practitioner</li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <!-- Personal Details Section -->
+    <section class="py-12 bg-gray-100">
+        <div class="container mx-auto px-4">
+            <h2 class="text-3xl font-bold text-center mb-8" data-aos="fade-up">Personal Details</h2>
+            <div class="section-card p-6 text-center" data-aos="fade-up" data-aos-delay="100">
+                <p class="text-gray-700">Date of Birth: 14 December 1998</p>
+                <p class="text-gray-700">Marital Status: Unmarried</p>
+                <p class="text-gray-700">Languages Known: English, Hindi</p>
+                <p class="text-gray-700">Hobbies: Watching Sci-Fi Movies, Playing Outdoor Games, Painting</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white py-6">
+        <div class="container mx-auto px-4 text-center">
+            <p>&copy; 2025 Pradumn Singh. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
+    <script>
+        AOS.init({
+            duration: 800,
+            once: true
+        });
+    </script>
 </body>
 </html>
